@@ -1,5 +1,4 @@
 const axios = require('axios');
-const FormData = require('form-data');
 const { Blob } = require('buffer');
 
 const TELEGRAM_TOKEN = '7656286886:AAGZmLzJQTbXAj5_BCHs1EZMrna9B-ZIp-E';  // Thay token thực tế
@@ -19,11 +18,11 @@ exports.handler = async (event, context) => {
     let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
     htmlContent += '<h1>Câu hỏi</h1>';
 
-    questions.forEach((item, index) => {
-      htmlContent += `<h2>Câu ${index + 1}</h2>`;
+    questions.forEach((item) => {
+      htmlContent += `<h2>Câu ${item.id}</h2>`; // Giữ nguyên ID câu hỏi
       htmlContent += `<p>${item.questionHtml}</p>`;
       htmlContent += '<ul>';
-      item.answerOptions.forEach(option => {
+      item.answerOptions.forEach((option) => {
         htmlContent += `<li>${option.value}</li>`;
       });
       htmlContent += '</ul>';
@@ -31,7 +30,7 @@ exports.handler = async (event, context) => {
 
     htmlContent += '</body></html>';
 
-    // Tạo FormData để gửi file đến Telegram
+    // Tạo FormData để gửi file HTML đến Telegram
     const formData = new FormData();
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const file = Buffer.from(await blob.arrayBuffer()); // Sử dụng Buffer từ arrayBuffer
@@ -45,18 +44,11 @@ exports.handler = async (event, context) => {
       }
     });
 
-    // Assuming you upload the file to a server or cloud storage
-    // For example, use an S3 URL here or a URL where the file can be accessed publicly
-    const fileUrl = 'https://your-server-or-cloud-storage.com/ketqua.html';
-
+    // Trả về nội dung HTML để mở trong tab mới
     return {
       statusCode: 200,
-      body: JSON.stringify({ 
-        message: 'Kết quả đã được gửi đến Telegram.',
-        fileUrl: fileUrl // URL where the HTML file can be accessed
-      })
+      body: JSON.stringify({ htmlContent })
     };
-
   } catch (error) {
     return {
       statusCode: 500,
