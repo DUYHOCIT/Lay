@@ -122,17 +122,6 @@
             background: #ff1e2d;
         }
 
-        .json-group {
-            position: relative;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.8s ease-in-out;
-            background: #f9f9f9;
-        }
-
         footer {
             text-align: center;
             margin-top: 20px;
@@ -153,35 +142,31 @@
         <div class="instructions">
             <p><strong>Hướng dẫn sử dụng:</strong></p>
             <ol>
-                <li>Bấm ctr + shift + i.</li>
-                <li>Đăng nhập vào lms.</li>
+                <li>Bấm <strong>Ctrl + Shift + I</strong>.</li>
+                <li>Đăng nhập vào LMS.</li>
                 <li>Bắt đầu làm bài cần lấy câu hỏi.</li>
-                <li>Chọn tab Network(Mạng).</li>
-                <li>Tìm và bấm vào class-plan-activity-student-tests.</li>
-                <li>Chuột phải chọn Copy và sau đó chọn Copy response.</li>
-                <li>Dán dữ liệu vào khung nhập bên dưới(Bạn có thể làm test nhiều lần và thêm khung để nhập sau đó web sẽ lọc được các câu trùng đi).</li>
-                <li>Nhấn nút <strong>"Thêm khung nhập JSON"</strong> nếu bạn muốn nhập thêm dữ liệu JSON khác.</li>
-                <li>Nhấn nút <strong>"Xử lý"</strong> để chuyển đổi dữ liệu và hiển thị kết quả.</li>
-                <li>Nếu bạn thêm nhầm khung nhập, hãy nhấn nút <strong>"×"</strong> ở góc phải để xóa khung đó.</li>
+                <li>Chọn tab <strong>Network (Mạng)</strong>.</li>
+                <li>Tìm và bấm vào <strong>class-plan-activity-student-tests</strong>.</li>
+                <li>Chuột phải chọn <strong>Copy</strong> và sau đó chọn <strong>Copy response</strong>.</li>
+                <li>Dán dữ liệu vào khung nhập bên dưới.</li>
+                <li>Nhấn nút <strong>"Thêm khung nhập JSON"</strong> nếu muốn nhập thêm dữ liệu JSON khác.</li>
+                <li>Nhấn nút <strong>"Xử lý"</strong> để hiển thị kết quả.</li>
+                <li>Nếu thêm nhầm khung nhập, hãy nhấn nút <strong>"×"</strong> để xóa khung đó.</li>
             </ol>
-            <p><strong>LƯU Ý: CHỈ SỬ DỤNG CÁCH NÀY KHI ĐÃ LÀM HẾT 3 LẦN</strong></p>
         </div>
 
-        <button id="videoGuideButton">Xem Hướng Dẫn Video</button>
-
+        <button id="addJsonButton">Thêm khung nhập dữ liệu</button>
         <div id="jsonInputs">
             <div class="json-group">
-                <textarea class="jsonInput" placeholder="Dán vào đây ní ơi..."></textarea>
-                <button class="deleteButton">&times;</button>
+                <textarea class="jsonInput" placeholder="Dán JSON vào đây..."></textarea>
+                <button class="deleteButton">×</button>
             </div>
         </div>
-
-        <button id="addJsonButton">Thêm khung nhập dữ liệu lần test nữa</button>
         <button id="processButton">Xử lý</button>
     </div>
 
     <footer>
-        Không share cho ai nhé
+        Không chia sẻ mã nguồn này công khai.
     </footer>
 
     <script>
@@ -190,8 +175,8 @@
             const newJsonGroup = document.createElement('div');
             newJsonGroup.className = 'json-group';
             newJsonGroup.innerHTML = `
-                <textarea class="jsonInput" placeholder="Dán vào đây ní ơi..."></textarea>
-                <button class="deleteButton">&times;</button>
+                <textarea class="jsonInput" placeholder="Dán JSON vào đây..."></textarea>
+                <button class="deleteButton">×</button>
             `;
             jsonInputs.appendChild(newJsonGroup);
 
@@ -201,111 +186,73 @@
             });
         });
 
-        document.getElementById('processButton').addEventListener('click', function () {
-    const jsonInputs = document.querySelectorAll('.jsonInput');
-    const uniqueQuestions = new Map();
+        document.getElementById('processButton').addEventListener('click', async function () {
+            const jsonInputs = document.querySelectorAll('.jsonInput');
+            const uniqueQuestions = new Map();
 
-    jsonInputs.forEach(input => {
-        const jsonInput = input.value;
+            jsonInputs.forEach(input => {
+                const jsonInput = input.value;
 
-        if (!jsonInput.trim()) return;
+                if (!jsonInput.trim()) return;
 
-        try {
-            const data = JSON.parse(jsonInput);
+                try {
+                    const data = JSON.parse(jsonInput);
 
-            if (!data || !data.data || !Array.isArray(data.data)) {
-                throw new Error('Dữ liệu JSON không hợp lệ hoặc thiếu thuộc tính "data".');
-            }
+                    if (!data || !data.data || !Array.isArray(data.data)) {
+                        throw new Error('Dữ liệu JSON không hợp lệ hoặc thiếu thuộc tính "data".');
+                    }
 
-            data.data.forEach(record => {
-                if (!record.test || !Array.isArray(record.test)) {
-                    console.warn('Bỏ qua một "record" không có thuộc tính "test" hoặc không phải là mảng.');
-                    return;
+                    data.data.forEach(record => {
+                        if (!record.test || !Array.isArray(record.test)) {
+                            console.warn('Bỏ qua một "record" không có thuộc tính "test" hoặc không phải là mảng.');
+                            return;
+                        }
+
+                        record.test.forEach(test => {
+                            if (!test.id || !test.question_direction || !test.answer_option) {
+                                console.warn('Bỏ qua một "test" không đầy đủ thông tin.');
+                                return;
+                            }
+
+                            const questionId = test.id;
+
+                            if (!uniqueQuestions.has(questionId)) {
+                                uniqueQuestions.set(questionId, {
+                                    questionHtml: test.question_direction,
+                                    answerOptions: test.answer_option
+                                });
+                            }
+                        });
+                    });
+                } catch (error) {
+                    alert('Một trong các dữ liệu JSON không hợp lệ. Vui lòng kiểm tra lại.');
+                    console.error('Lỗi khi phân tích JSON:', error);
+                    throw error;
+                }
+            });
+
+            const processedData = Array.from(uniqueQuestions.values());
+
+            try {
+                const response = await fetch('/.netlify/functions/upload', {
+                    method: 'POST',
+                    body: JSON.stringify({ questions: processedData }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Dữ liệu đã được xử lý và gửi đi thành công.');
+                } else {
+                    alert('Đã xảy ra lỗi khi gửi dữ liệu: ' + result.message);
                 }
 
-                record.test.forEach(test => {
-                    if (!test.id || !test.question_direction || !test.answer_option) {
-                        console.warn('Bỏ qua một "test" không đầy đủ thông tin.');
-                        return;
-                    }
-
-                    const questionId = test.id;
-
-                    if (!uniqueQuestions.has(questionId)) {
-                        uniqueQuestions.set(questionId, {
-                            questionHtml: test.question_direction,
-                            answerOptions: test.answer_option
-                        });
-                    }
-                });
-            });
-        } catch (error) {
-            alert('Một trong các dữ liệu JSON không hợp lệ. Vui lòng kiểm tra lại.');
-            console.error('Lỗi khi phân tích JSON:', error);
-            throw error;
-        }
-    });
-
-    // Mở tab mới ngay lập tức
-    const newTab = window.open('', '_blank');
-    newTab.document.write('<html><head><title>Kết quả xử lý JSON</title></head><body>');
-    newTab.document.write('<h1>Đang xử lý, vui lòng chờ...</h1>');
-    newTab.document.write('</body></html>');
-    newTab.document.close();
-
-    // Chuyển kết quả thành JSON và gửi tới Netlify function
-    const processedData = Array.from(uniqueQuestions).map(([id, data]) => ({
-        questionHtml: data.questionHtml,
-        answerOptions: data.answerOptions
-    }));
-
-    fetch('/.netlify/functions/upload', {
-        method: 'POST',
-        body: JSON.stringify({ questions: processedData }),
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Cập nhật nội dung trong tab mới
-        let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
-        htmlContent += '<h1>Câu hỏi</h1>';
-
-        if (data.questions && Array.isArray(data.questions)) {
-            data.questions.forEach((item, index) => {
-                htmlContent += `<h2>Câu ${index + 1}</h2>`;
-                htmlContent += `<p>${item.questionHtml}</p>`;
-                htmlContent += '<ul>';
-                item.answerOptions.forEach(option => {
-                    htmlContent += `<li>${option.value}</li>`;
-                });
-                htmlContent += '</ul>';
-            });
-        } else {
-            htmlContent += '<p>Dữ liệu trả về không hợp lệ hoặc không chứa câu hỏi.</p>';
-        }
-
-        htmlContent += '</body></html>';
-
-        // Gửi nội dung HTML vào tab mới
-        newTab.document.open();
-        newTab.document.write(htmlContent);
-        newTab.document.close();
-    })
-    .catch(error => {
-        // Hiển thị lỗi trong tab mới
-        newTab.document.open();
-        newTab.document.write('<h1>Đã xảy ra lỗi khi xử lý dữ liệu</h1>');
-        newTab.document.write('<p>' + error.message + '</p>');
-        newTab.document.close();
-        alert('Lỗi kết nối với server: ' + error);
-    });
-});
-
-
-        document.getElementById('videoGuideButton').addEventListener('click', function () {
-            window.open('https://drive.google.com/file/d/1DgBA0R6jlCU7KjSdF6mei_LKs5bzHf9D/view?usp=sharing', '_blank');
+            } catch (error) {
+                console.error('Lỗi khi gửi dữ liệu:', error);
+                alert('Đã xảy ra lỗi không mong muốn khi gửi dữ liệu.');
+            }
         });
     </script>
 </body>
 </html>
-
