@@ -34,10 +34,11 @@ exports.handler = async (event, context) => {
     // Tạo FormData để gửi file đến Telegram
     const formData = new FormData();
     const blob = new Blob([htmlContent], { type: 'text/html' });
-    const file = new Buffer(blob);
+    const file = Buffer.from(await blob.arrayBuffer()); // Sửa lại Buffer cách này để tránh lỗi
     formData.append('chat_id', TELEGRAM_CHAT_ID);
     formData.append('document', file, 'ketqua.html');
 
+    // Gửi dữ liệu đến Telegram
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument`, formData, {
       headers: {
         ...formData.getHeaders(),
@@ -50,6 +51,7 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
+    console.error(error);  // Log lỗi chi tiết
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Lỗi khi xử lý dữ liệu', error: error.message })
