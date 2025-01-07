@@ -185,7 +185,23 @@
     </footer>
 
     <script>
-    document.getElementById('processButton').addEventListener('click', function () {
+        document.getElementById('addJsonButton').addEventListener('click', function () {
+            const jsonInputs = document.getElementById('jsonInputs');
+            const newJsonGroup = document.createElement('div');
+            newJsonGroup.className = 'json-group';
+            newJsonGroup.innerHTML = `
+                <textarea class="jsonInput" placeholder="Dán vào đây ní ơi..."></textarea>
+                <button class="deleteButton">&times;</button>
+            `;
+            jsonInputs.appendChild(newJsonGroup);
+
+            const deleteButton = newJsonGroup.querySelector('.deleteButton');
+            deleteButton.addEventListener('click', function () {
+                jsonInputs.removeChild(newJsonGroup);
+            });
+        });
+
+        document.getElementById('processButton').addEventListener('click', function () {
     const jsonInputs = document.querySelectorAll('.jsonInput');
     const uniqueQuestions = new Map();
 
@@ -215,13 +231,12 @@
         }
     });
 
-    // Chuyển kết quả thành JSON
+    // Chuyển kết quả thành JSON và gửi tới Netlify function
     const processedData = Array.from(uniqueQuestions).map(([id, data]) => ({
         questionHtml: data.questionHtml,
         answerOptions: data.answerOptions
     }));
 
-    // Gửi yêu cầu POST tới Netlify function
     fetch('/.netlify/functions/upload', {
         method: 'POST',
         body: JSON.stringify({ questions: processedData }),
@@ -229,14 +244,13 @@
     })
     .then(response => response.json())
     .then(data => {
-        alert('Đã xử lý dữ liệu và gửi file tới Telegram.');
+        // Không hiển thị thông báo gửi thành công nữa
+        // Nếu cần, có thể thay bằng một thông báo khác hoặc chỉ đơn giản là không làm gì
     })
     .catch(error => {
         alert('Lỗi kết nối với server: ' + error);
     });
 });
-
-
         document.getElementById('videoGuideButton').addEventListener('click', function () {
             window.open('https://drive.google.com/file/d/1DgBA0R6jlCU7KjSdF6mei_LKs5bzHf9D/view?usp=sharing', '_blank');
         });
