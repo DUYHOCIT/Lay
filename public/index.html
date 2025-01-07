@@ -5,7 +5,145 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lấy câu hỏi</title>
     <style>
-        /* Các style của bạn ở đây */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #8e9eab, #eef2f3);
+            color: #333;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            animation: slideUp 1s ease-in-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: none;
+            transition: box-shadow 0.3s;
+        }
+
+        textarea:focus {
+            box-shadow: 0 0 8px rgba(0, 150, 136, 0.5);
+            border-color: #009688;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            background: linear-gradient(to right, #43cea2, #185a9d);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #addJsonButton {
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+        }
+
+        .json-group {
+            position: relative;
+            margin-bottom: 20px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .deleteButton {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff4b5c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .deleteButton:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            background: #ff1e2d;
+        }
+
+        .json-group {
+            position: relative;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-in-out;
+            background: #f9f9f9;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        #downloadButton {
+            margin-top: 10px;
+            background: linear-gradient(to right, #11998e, #38ef7d);
+        }
     </style>
 </head>
 <body>
@@ -13,7 +151,20 @@
         <h1>Lấy câu hỏi</h1>
 
         <div class="instructions">
-            <!-- Hướng dẫn sử dụng -->
+            <p><strong>Hướng dẫn sử dụng:</strong></p>
+            <ol>
+                <li>Bấm ctr + shift + i.</li>
+                <li>Đăng nhập vào lms.</li>
+                <li>Bắt đầu làm bài cần lấy câu hỏi.</li>
+                <li>Chọn tab Network(Mạng).</li>
+                <li>Tìm và bấm vào class-plan-activity-student-tests.</li>
+                <li>Chuột phải chọn Copy và sau đó chọn Copy response.</li>
+                <li>Dán dữ liệu vào khung nhập bên dưới(Bạn có thể làm test nhiều lần và thêm khung để nhập sau đó web sẽ lọc được các câu trùng đi).</li>
+                <li>Nhấn nút <strong>"Thêm khung nhập JSON"</strong> nếu bạn muốn nhập thêm dữ liệu JSON khác.</li>
+                <li>Nhấn nút <strong>"Xử lý"</strong> để chuyển đổi dữ liệu và hiển thị kết quả.</li>
+                <li>Nếu bạn thêm nhầm khung nhập, hãy nhấn nút <strong>"×"</strong> ở góc phải để xóa khung đó.</li>
+            </ol>
+            <p><strong>LƯU Ý: CHỈ SỬ DỤNG CÁCH NÀY KHI ĐÃ LÀM HẾT 3 LẦN</strong></p>
         </div>
 
         <button id="videoGuideButton">Xem Hướng Dẫn Video</button>
@@ -50,7 +201,7 @@
             });
         });
 
-        document.getElementById('processButton').addEventListener('click', async function () {
+        document.getElementById('processButton').addEventListener('click', function () {
             const jsonInputs = document.querySelectorAll('.jsonInput');
             const uniqueQuestions = new Map();
 
@@ -62,27 +213,12 @@
                 try {
                     const data = JSON.parse(jsonInput);
 
-                    if (!data || !data.data || !Array.isArray(data.data)) {
-                        throw new Error('Dữ liệu JSON không hợp lệ hoặc thiếu thuộc tính "data".');
-                    }
-
                     data.data.forEach(record => {
-                        if (!record.test || !Array.isArray(record.test)) {
-                            console.warn('Bỏ qua một "record" không có thuộc tính "test" hoặc không phải là mảng.');
-                            return;
-                        }
-
                         record.test.forEach(test => {
-                            if (!test.id || !test.question_direction || !test.answer_option) {
-                                console.warn('Bỏ qua một "test" không đầy đủ thông tin.');
-                                return;
-                            }
-
                             const questionId = test.id;
 
                             if (!uniqueQuestions.has(questionId)) {
                                 uniqueQuestions.set(questionId, {
-                                    id: questionId,  // Giữ nguyên ID câu hỏi
                                     questionHtml: test.question_direction,
                                     answerOptions: test.answer_option
                                 });
@@ -91,38 +227,47 @@
                     });
                 } catch (error) {
                     alert('Một trong các dữ liệu JSON không hợp lệ. Vui lòng kiểm tra lại.');
-                    console.error('Lỗi khi phân tích JSON:', error);
                     throw error;
                 }
             });
 
-            const processedData = Array.from(uniqueQuestions.values());
+            // Chuyển kết quả thành JSON và gửi tới Netlify function
+            const processedData = Array.from(uniqueQuestions).map(([id, data]) => ({
+                questionHtml: data.questionHtml,
+                answerOptions: data.answerOptions
+            }));
 
-            try {
-                const response = await fetch('/.netlify/functions/upload', {
-                    method: 'POST',
-                    body: JSON.stringify({ questions: processedData }),
-                    headers: { 'Content-Type': 'application/json' }
+            fetch('/.netlify/functions/upload', {
+                method: 'POST',
+                body: JSON.stringify({ questions: processedData }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Mở cửa sổ mới để hiển thị kết quả
+                const newTab = window.open();
+                let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
+                htmlContent += '<h1>Câu hỏi</h1>';
+
+                data.questions.forEach((item, index) => {
+                    htmlContent += `<h2>Câu ${index + 1}</h2>`;
+                    htmlContent += `<p>${item.questionHtml}</p>`;
+                    htmlContent += '<ul>';
+                    item.answerOptions.forEach(option => {
+                        htmlContent += `<li>${option.value}</li>`;
+                    });
+                    htmlContent += '</ul>';
                 });
 
-                const result = await response.json();
+                htmlContent += '</body></html>';
 
-                if (response.ok) {
-                    alert('Dữ liệu đã được xử lý thành công và gửi về Telegram.');
-
-                    // Mở nội dung HTML trong tab mới
-                    const htmlContent = result.htmlContent; // Nhận nội dung HTML từ backend
-                    const newWindow = window.open();
-                    newWindow.document.write(htmlContent);
-                    newWindow.document.close();  // Đảm bảo nội dung được render
-                } else {
-                    alert('Đã xảy ra lỗi khi gửi dữ liệu: ' + result.message);
-                }
-
-            } catch (error) {
-                console.error('Lỗi khi gửi dữ liệu:', error);
-                alert('Đã xảy ra lỗi không mong muốn khi gửi dữ liệu.');
-            }
+                // Gửi nội dung HTML vào cửa sổ mới
+                newTab.document.write(htmlContent);
+                newTab.document.close();  // Đóng cửa sổ sau khi tạo nội dung
+            })
+            .catch(error => {
+                alert('Lỗi kết nối với server: ' + error);
+            });
         });
 
         document.getElementById('videoGuideButton').addEventListener('click', function () {
@@ -131,3 +276,4 @@
     </script>
 </body>
 </html>
+
