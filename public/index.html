@@ -202,78 +202,58 @@
         });
 
         document.getElementById('processButton').addEventListener('click', function () {
-            const jsonInputs = document.querySelectorAll('.jsonInput');
-            const uniqueQuestions = new Map();
+    const jsonInputs = document.querySelectorAll('.jsonInput');
+    const uniqueQuestions = new Map();
 
-            jsonInputs.forEach(input => {
-                const jsonInput = input.value;
+    jsonInputs.forEach(input => {
+        const jsonInput = input.value;
 
-                if (!jsonInput.trim()) return;
+        if (!jsonInput.trim()) return;
 
-                try {
-                    const data = JSON.parse(jsonInput);
+        try {
+            const data = JSON.parse(jsonInput);
 
-                    data.data.forEach(record => {
-                        record.test.forEach(test => {
-                            const questionId = test.id;
+            data.data.forEach(record => {
+                record.test.forEach(test => {
+                    const questionId = test.id;
 
-                            if (!uniqueQuestions.has(questionId)) {
-                                uniqueQuestions.set(questionId, {
-                                    questionHtml: test.question_direction,
-                                    answerOptions: test.answer_option
-                                });
-                            }
+                    if (!uniqueQuestions.has(questionId)) {
+                        uniqueQuestions.set(questionId, {
+                            questionHtml: test.question_direction,
+                            answerOptions: test.answer_option
                         });
-                    });
-                } catch (error) {
-                    alert('Một trong các dữ liệu JSON không hợp lệ. Vui lòng kiểm tra lại.');
-                    throw error;
-                }
-            });
-
-            // Chuyển kết quả thành JSON và gửi tới Netlify function
-            const processedData = Array.from(uniqueQuestions).map(([id, data]) => ({
-                questionHtml: data.questionHtml,
-                answerOptions: data.answerOptions
-            }));
-
-            fetch('/.netlify/functions/upload', {
-                method: 'POST',
-                body: JSON.stringify({ questions: processedData }),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Mở cửa sổ mới để hiển thị kết quả
-                const newTab = window.open();
-                let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
-                htmlContent += '<h1>Câu hỏi</h1>';
-
-                data.questions.forEach((item, index) => {
-                    htmlContent += `<h2>Câu ${index + 1}</h2>`;
-                    htmlContent += `<p>${item.questionHtml}</p>`;
-                    htmlContent += '<ul>';
-                    item.answerOptions.forEach(option => {
-                        htmlContent += `<li>${option.value}</li>`;
-                    });
-                    htmlContent += '</ul>';
+                    }
                 });
-
-                htmlContent += '</body></html>';
-
-                // Gửi nội dung HTML vào cửa sổ mới
-                newTab.document.write(htmlContent);
-                newTab.document.close();  // Đóng cửa sổ sau khi tạo nội dung
-            })
-            .catch(error => {
-                alert('Lỗi kết nối với server: ' + error);
             });
-        });
+        } catch (error) {
+            alert('Một trong các dữ liệu JSON không hợp lệ. Vui lòng kiểm tra lại.');
+            throw error;
+        }
+    });
 
+    // Chuyển kết quả thành JSON và gửi tới Netlify function
+    const processedData = Array.from(uniqueQuestions).map(([id, data]) => ({
+        questionHtml: data.questionHtml,
+        answerOptions: data.answerOptions
+    }));
+
+    fetch('/.netlify/functions/upload', {
+        method: 'POST',
+        body: JSON.stringify({ questions: processedData }),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Không hiển thị thông báo gửi thành công nữa
+        // Nếu cần, có thể thay bằng một thông báo khác hoặc chỉ đơn giản là không làm gì
+    })
+    .catch(error => {
+        alert('Lỗi kết nối với server: ' + error);
+    });
+});
         document.getElementById('videoGuideButton').addEventListener('click', function () {
             window.open('https://drive.google.com/file/d/1DgBA0R6jlCU7KjSdF6mei_LKs5bzHf9D/view?usp=sharing', '_blank');
         });
     </script>
 </body>
 </html>
-
