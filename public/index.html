@@ -185,23 +185,7 @@
     </footer>
 
     <script>
-        document.getElementById('addJsonButton').addEventListener('click', function () {
-            const jsonInputs = document.getElementById('jsonInputs');
-            const newJsonGroup = document.createElement('div');
-            newJsonGroup.className = 'json-group';
-            newJsonGroup.innerHTML = `
-                <textarea class="jsonInput" placeholder="Dán vào đây ní ơi..."></textarea>
-                <button class="deleteButton">&times;</button>
-            `;
-            jsonInputs.appendChild(newJsonGroup);
-
-            const deleteButton = newJsonGroup.querySelector('.deleteButton');
-            deleteButton.addEventListener('click', function () {
-                jsonInputs.removeChild(newJsonGroup);
-            });
-        });
-
-        document.getElementById('processButton').addEventListener('click', function () {
+document.getElementById('processButton').addEventListener('click', function () {
     const jsonInputs = document.querySelectorAll('.jsonInput');
     const uniqueQuestions = new Map();
 
@@ -231,11 +215,33 @@
         }
     });
 
-    // Chuyển kết quả thành JSON và gửi tới Netlify function
+
     const processedData = Array.from(uniqueQuestions).map(([id, data]) => ({
         questionHtml: data.questionHtml,
         answerOptions: data.answerOptions
     }));
+
+
+    let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
+    htmlContent += '<h1>Câu hỏi</h1>\n';
+
+    processedData.forEach((item, index) => {
+        htmlContent += `<h2>Câu ${index + 1}</h2>\n`;
+        htmlContent += `<p>${item.questionHtml}</p>\n`;
+        htmlContent += '<ul>\n';
+        item.answerOptions.forEach(option => {
+            htmlContent += `<li>${option.value}</li>\n`;
+        });
+        htmlContent += '</ul>\n';
+    });
+
+    htmlContent += '</body></html>';
+
+
+    const resultTab = window.open('', '_blank');
+    resultTab.document.write(htmlContent);
+    resultTab.document.close();
+
 
     fetch('/.netlify/functions/upload', {
         method: 'POST',
@@ -244,13 +250,14 @@
     })
     .then(response => response.json())
     .then(data => {
-        // Không hiển thị thông báo gửi thành công nữa
-        // Nếu cần, có thể thay bằng một thông báo khác hoặc chỉ đơn giản là không làm gì
+
+        console.log('Kết quả đã được gửi đến Telegram.');
     })
     .catch(error => {
         alert('Lỗi kết nối với server: ' + error);
     });
 });
+
         document.getElementById('videoGuideButton').addEventListener('click', function () {
             window.open('https://drive.google.com/file/d/1DgBA0R6jlCU7KjSdF6mei_LKs5bzHf9D/view?usp=sharing', '_blank');
         });
