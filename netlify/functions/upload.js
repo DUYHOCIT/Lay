@@ -14,8 +14,8 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Lấy dữ liệu từ body của yêu cầu
     const { questions } = JSON.parse(event.body);
+    console.log("Received questions:", questions);  // Debug log để kiểm tra dữ liệu đầu vào
 
     // Tạo nội dung kết quả dưới dạng HTML
     let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
@@ -36,16 +36,19 @@ exports.handler = async (event, context) => {
     // Tạo FormData để gửi file tới Telegram
     const formData = new FormData();
     const blob = new Blob([htmlContent], { type: 'text/html' });
-    const file = new Buffer(blob);
+    const file = Buffer.from(blob);  // Sử dụng Buffer.from thay vì new Buffer, vì new Buffer bị deprecated
     formData.append('chat_id', TELEGRAM_CHAT_ID);
     formData.append('document', file, 'ketqua.html');
 
-    // Gửi dữ liệu đến Telegram
+    console.log("Sending to Telegram with FormData...");  // Log để kiểm tra quá trình gửi
+
     const response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument`, formData, {
       headers: {
         ...formData.getHeaders(),
       }
     });
+
+    console.log("Telegram response:", response.data);  // Log phản hồi từ Telegram để kiểm tra
 
     return {
       statusCode: 200,
@@ -53,7 +56,7 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error(error);
+    console.error('Error sending to Telegram:', error);  // Log lỗi nếu có
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Lỗi khi xử lý dữ liệu', error: error.message })
