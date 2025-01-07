@@ -45,9 +45,16 @@ exports.handler = async (event, context) => {
       }
     });
 
+    // Assuming you upload the file to a server or cloud storage
+    // For example, use an S3 URL here or a URL where the file can be accessed publicly
+    const fileUrl = 'https://your-server-or-cloud-storage.com/ketqua.html';
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Kết quả đã được gửi đến Telegram.' })
+      body: JSON.stringify({ 
+        message: 'Kết quả đã được gửi đến Telegram.',
+        fileUrl: fileUrl // URL where the HTML file can be accessed
+      })
     };
 
   } catch (error) {
