@@ -19,8 +19,9 @@ exports.handler = async (event, context) => {
     let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
     htmlContent += '<h1>Câu hỏi</h1>';
 
-    questions.forEach((item, index) => {
-      htmlContent += `<h2>Câu ${index + 1}</h2>`;
+    questions.forEach((item) => {
+      // Sử dụng ID câu hỏi thực tế thay vì index
+      htmlContent += `<h2>Câu ${item.id}</h2>`; // Giữ nguyên ID câu hỏi
       htmlContent += `<p>${item.questionHtml}</p>`;
       htmlContent += '<ul>';
       item.answerOptions.forEach(option => {
