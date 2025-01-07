@@ -9,40 +9,11 @@
 <body>
     <div class="container">
         <h1>Lấy câu hỏi</h1>
-        <div class="instructions">
-            <p><strong>Hướng dẫn sử dụng:</strong></p>
-            <ol>
-                <li>Bấm ctr + shift + i.</li>
-                <li>Đăng nhập vào lms.</li>
-                <li>Bắt đầu làm bài cần lấy câu hỏi.</li>
-                <li>Chọn tab Network(Mạng).</li>
-                <li>Tìm và bấm vào class-plan-activity-student-tests.</li>
-                <li>Chuột phải chọn Copy và sau đó chọn Copy response.</li>
-                <li>Dán dữ liệu vào khung nhập bên dưới(Bạn có thể làm test nhiều lần và thêm khung để nhập sau đó web sẽ lọc được các câu trùng đi).</li>
-                <li>Nhấn nút <strong>"Thêm khung nhập JSON"</strong> nếu bạn muốn nhập thêm dữ liệu JSON khác.</li>
-                <li>Nhấn nút <strong>"Xử lý"</strong> để chuyển đổi dữ liệu và hiển thị kết quả.</li>
-                <li>Nếu bạn thêm nhầm khung nhập, hãy nhấn nút <strong>"×"</strong> ở góc phải để xóa khung đó.</li>
-            </ol>
-            <p><strong>LƯU Ý: CHỈ SỬ DỤNG CÁCH NÀY KHI ĐÃ LÀM HẾT 3 LẦN</strong></p>
+        <div class="json-inputs">
+            <textarea class="jsonInput" placeholder="Dán vào đây"></textarea>
         </div>
-
-        <button id="videoGuideButton">Xem Hướng Dẫn Video</button>
-
-        <div id="jsonInputs">
-            <div class="json-group">
-                <textarea class="jsonInput" placeholder="Dán vào đây ní ơi..."></textarea>
-                <button class="deleteButton">&times;</button>
-            </div>
-        </div>
-
-        <button id="addJsonButton">Thêm khung nhập dữ liệu lần test nữa</button>
         <button id="processButton">Xử lý</button>
     </div>
-
-    <footer>
-        Không share cho ai nhé
-    </footer>
-
     <script src="script.js"></script>
 </body>
 </html>

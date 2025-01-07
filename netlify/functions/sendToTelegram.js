@@ -1,58 +1,42 @@
-const axios = require('axios');
-const FormData = require('form-data');
-const { Blob } = require('buffer');
+const TELEGRAM_TOKEN = '7656286886:AAGZmLzJQTbXAj5_BCHs1EZMrna9B-ZIp-E';  
+const TELEGRAM_CHAT_ID = '6623256952';  
 
-const TELEGRAM_TOKEN = '7656286886:AAGZmLzJQTbXAj5_BCHs1EZMrna9B-ZIp-E';  // Thay token thực tế
-const TELEGRAM_CHAT_ID = '6623256952';  // Thay chat ID thực tế
+const fetch = require('node-fetch');  // Netlify Functions hỗ trợ `node-fetch`
 
-exports.handler = async (event, context) => {
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ message: 'Method Not Allowed' })
-    };
-  }
+exports.handler = async function(event, context) {
+    try {
+        const body = JSON.parse(event.body);  // Phân tích dữ liệu JSON từ client
+        console.log('Received data:', body);
 
-  try {
-    const { questions } = JSON.parse(event.body);
+        // Gửi thông báo đến Telegram
+        const message = body.questions.map((q, index) => {
+            return `Câu hỏi ${index + 1}: ${q.questionHtml}\nLựa chọn: ${q.answerOptions.join(', ')}`;
+        }).join('\n\n');
 
-    let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
-    htmlContent += '<h1>Câu hỏi</h1>';
+        const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+        const response = await fetch(telegramUrl, {
+            method: 'POST',
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            }),
+            headers: { 'Content-Type': 'application/json' }
+        });
 
-    questions.forEach((item, index) => {
-      htmlContent += `<h2>Câu ${index + 1}</h2>`;
-      htmlContent += `<p>${item.questionHtml}</p>`;
-      htmlContent += '<ul>';
-      item.answerOptions.forEach(option => {
-        htmlContent += `<li>${option.value}</li>`;
-      });
-      htmlContent += '</ul>';
-    });
+        if (!response.ok) {
+            throw new Error('Failed to send message to Telegram');
+        }
 
-    htmlContent += '</body></html>';
-
-    // Tạo FormData để gửi file đến Telegram
-    const formData = new FormData();
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const file = new Buffer(blob);
-    formData.append('chat_id', TELEGRAM_CHAT_ID);
-    formData.append('document', file, 'ketqua.html');
-
-    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument`, formData, {
-      headers: {
-        ...formData.getHeaders(),
-      }
-    });
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Kết quả đã được gửi đến Telegram.' })
-    };
-
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Lỗi khi xử lý dữ liệu', error: error.message })
-    };
-  }
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: 'Sent to Telegram successfully' })
+        };
+    } catch (error) {
+        console.error('Error sending message to Telegram:', error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Server error' })
+        };
+    }
 };

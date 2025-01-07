@@ -14,22 +14,22 @@ document.getElementById('addJsonButton').addEventListener('click', function () {
     });
 });
 
+
+
 document.getElementById('processButton').addEventListener('click', function () {
     const jsonInputs = document.querySelectorAll('.jsonInput');
     const uniqueQuestions = new Map();
 
+    // Xử lý các input JSON
     jsonInputs.forEach(input => {
         const jsonInput = input.value;
-
         if (!jsonInput.trim()) return;
 
         try {
             const data = JSON.parse(jsonInput);
-
             data.data.forEach(record => {
                 record.test.forEach(test => {
                     const questionId = test.id;
-
                     if (!uniqueQuestions.has(questionId)) {
                         uniqueQuestions.set(questionId, {
                             questionHtml: test.question_direction,
@@ -49,20 +49,24 @@ document.getElementById('processButton').addEventListener('click', function () {
         answerOptions: data.answerOptions
     }));
 
+    console.log('Processed data:', processedData);  // Kiểm tra dữ liệu trước khi gửi
+
     fetch('/.netlify/functions/sendToTelegram', {
         method: 'POST',
         body: JSON.stringify({ questions: processedData }),
         headers: { 'Content-Type': 'application/json' }
     })
-    .then(response => response.json())
+    .then(response => response.text())  // Đọc phản hồi dưới dạng văn bản
     .then(data => {
-        // Xử lý kết quả (nếu cần)
+        console.log('Response from server:', data);
+        try {
+            const jsonData = JSON.parse(data);  // Thử phân tích dữ liệu JSON
+            // Xử lý phản hồi từ server ở đây
+        } catch (error) {
+            alert('Lỗi phân tích JSON từ server: ' + error);
+        }
     })
     .catch(error => {
         alert('Lỗi kết nối với server: ' + error);
     });
-});
-
-document.getElementById('videoGuideButton').addEventListener('click', function () {
-    window.open('https://drive.google.com/file/d/1DgBA0R6jlCU7KjSdF6mei_LKs5bzHf9D/view?usp=sharing', '_blank');
 });

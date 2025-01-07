@@ -1,7 +1,8 @@
 [build]
-  functions = "functions" # Đặt đường dẫn đến thư mục chứa các hàm Netlify
+  functions = "functions"  # Chỉ định thư mục chứa các functions
 
 [[redirects]]
   from = "/.netlify/functions/*"
-  to = "/.netlify/functions/:splat"
+  to = "/functions/:splat"
   status = 200
+  force = true
