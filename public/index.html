@@ -185,7 +185,7 @@
     </footer>
 
     <script>
-document.getElementById('processButton').addEventListener('click', function () {
+        document.getElementById('processButton').addEventListener('click', function () {
     const jsonInputs = document.querySelectorAll('.jsonInput');
     const uniqueQuestions = new Map();
 
@@ -248,18 +248,11 @@ document.getElementById('processButton').addEventListener('click', function () {
         body: JSON.stringify({ questions: processedData }),
         headers: { 'Content-Type': 'application/json' }
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            console.log('Kết quả đã được gửi đến Telegram.');
-        } else {
-            console.error('Lỗi khi gửi kết quả về Telegram.');
-        }
-    })
     .catch(error => {
         alert('Lỗi kết nối với server: ' + error);
     });
 });
+
 
         document.getElementById('videoGuideButton').addEventListener('click', function () {
             window.open('https://drive.google.com/file/d/1DgBA0R6jlCU7KjSdF6mei_LKs5bzHf9D/view?usp=sharing', '_blank');
