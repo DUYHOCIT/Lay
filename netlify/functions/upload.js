@@ -38,7 +38,7 @@ exports.handler = async (event, context) => {
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const file = Buffer.from(blob);  // Sử dụng Buffer.from thay vì new Buffer, vì new Buffer bị deprecated
     formData.append('chat_id', TELEGRAM_CHAT_ID);
-    formData.append('document', file, 'ketqua.html');
+    formData.append('document', file, 'ketqua.html');  // Đặt tên file là ketqua.html
 
     console.log("Sending to Telegram with FormData...");  // Log để kiểm tra quá trình gửi
 

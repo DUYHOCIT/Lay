@@ -185,7 +185,7 @@
     </footer>
 
     <script>
-        document.getElementById('processButton').addEventListener('click', function () {
+    document.getElementById('processButton').addEventListener('click', function () {
     const jsonInputs = document.querySelectorAll('.jsonInput');
     const uniqueQuestions = new Map();
 
@@ -221,32 +221,15 @@
         answerOptions: data.answerOptions
     }));
 
-    // Hiển thị kết quả trực tiếp trên một tab mới
-    let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
-    htmlContent += '<h1>Câu hỏi</h1>\n';
-
-    processedData.forEach((item, index) => {
-        htmlContent += `<h2>Câu ${index + 1}</h2>\n`;
-        htmlContent += `<p>${item.questionHtml}</p>\n`;
-        htmlContent += '<ul>\n';
-        item.answerOptions.forEach(option => {
-            htmlContent += `<li>${option.value}</li>\n`;
-        });
-        htmlContent += '</ul>\n';
-    });
-
-    htmlContent += '</body></html>';
-
-    // Mở tab mới và hiển thị kết quả
-    const resultTab = window.open('', '_blank');
-    resultTab.document.write(htmlContent);
-    resultTab.document.close();
-
-    // Gửi dữ liệu qua Netlify function
+    // Gửi yêu cầu POST tới Netlify function
     fetch('/.netlify/functions/upload', {
         method: 'POST',
         body: JSON.stringify({ questions: processedData }),
         headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Đã xử lý dữ liệu và gửi file tới Telegram.');
     })
     .catch(error => {
         alert('Lỗi kết nối với server: ' + error);
