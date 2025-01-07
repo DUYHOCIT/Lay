@@ -213,8 +213,22 @@
         try {
             const data = JSON.parse(jsonInput);
 
+            if (!data || !data.data || !Array.isArray(data.data)) {
+                throw new Error('Dữ liệu JSON không hợp lệ hoặc thiếu thuộc tính "data".');
+            }
+
             data.data.forEach(record => {
+                if (!record.test || !Array.isArray(record.test)) {
+                    console.warn('Bỏ qua một "record" không có thuộc tính "test" hoặc không phải là mảng.');
+                    return;
+                }
+
                 record.test.forEach(test => {
+                    if (!test.id || !test.question_direction || !test.answer_option) {
+                        console.warn('Bỏ qua một "test" không đầy đủ thông tin.');
+                        return;
+                    }
+
                     const questionId = test.id;
 
                     if (!uniqueQuestions.has(questionId)) {
@@ -227,6 +241,7 @@
             });
         } catch (error) {
             alert('Một trong các dữ liệu JSON không hợp lệ. Vui lòng kiểm tra lại.');
+            console.error('Lỗi khi phân tích JSON:', error);
             throw error;
         }
     });
@@ -255,15 +270,19 @@
         let htmlContent = '<html><head><title>Kết quả xử lý JSON</title></head><body>';
         htmlContent += '<h1>Câu hỏi</h1>';
 
-        data.questions.forEach((item, index) => {
-            htmlContent += `<h2>Câu ${index + 1}</h2>`;
-            htmlContent += `<p>${item.questionHtml}</p>`;
-            htmlContent += '<ul>';
-            item.answerOptions.forEach(option => {
-                htmlContent += `<li>${option.value}</li>`;
+        if (data.questions && Array.isArray(data.questions)) {
+            data.questions.forEach((item, index) => {
+                htmlContent += `<h2>Câu ${index + 1}</h2>`;
+                htmlContent += `<p>${item.questionHtml}</p>`;
+                htmlContent += '<ul>';
+                item.answerOptions.forEach(option => {
+                    htmlContent += `<li>${option.value}</li>`;
+                });
+                htmlContent += '</ul>';
             });
-            htmlContent += '</ul>';
-        });
+        } else {
+            htmlContent += '<p>Dữ liệu trả về không hợp lệ hoặc không chứa câu hỏi.</p>';
+        }
 
         htmlContent += '</body></html>';
 
