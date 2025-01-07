@@ -1,15 +1,10 @@
 {
-  "name": "my-project",
+  "name": "my-netlify-project",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "netlify dev"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "axios": "^1.7.9"
+    "axios": "^0.21.1"
   }
 }

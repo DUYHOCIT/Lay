@@ -34,11 +34,10 @@ exports.handler = async (event, context) => {
     // Tạo FormData để gửi file đến Telegram
     const formData = new FormData();
     const blob = new Blob([htmlContent], { type: 'text/html' });
-    const file = Buffer.from(await blob.arrayBuffer()); // Sử dụng Buffer từ arrayBuffer
+    const file = new Buffer(blob);
     formData.append('chat_id', TELEGRAM_CHAT_ID);
     formData.append('document', file, 'ketqua.html');
 
-    // Gửi yêu cầu đến API Telegram
     await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument`, formData, {
       headers: {
         ...formData.getHeaders(),

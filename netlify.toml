@@ -1,9 +1,7 @@
 [build]
-  base = "/"
-  publish = "public"
-  functions = "netlify/functions"
+  functions = "functions" # Đặt đường dẫn đến thư mục chứa các hàm Netlify
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/.netlify/functions/*"
+  to = "/.netlify/functions/:splat"
   status = 200
